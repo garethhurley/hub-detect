@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.detect
 
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdFactoryWithClassifier
+
 import javax.annotation.PostConstruct
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
@@ -69,6 +71,7 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger
 import com.blackducksoftware.integration.util.IntegrationEscapeUtil
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdFactoryWithClassifier
 
 import freemarker.template.Configuration
 import groovy.transform.TypeChecked
@@ -264,6 +267,11 @@ class Application {
     @Bean
     ExternalIdFactory externalIdFactory() {
         new ExternalIdFactory();
+    }
+
+    @Bean
+    ExternalIdFactoryWithClassifier externalIdFactoryWithClassifier() {
+        new ExternalIdFactoryWithClassifier()
     }
 
     @Bean

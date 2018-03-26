@@ -23,6 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.detect.bomtool.maven
 
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdFactoryWithClassifier
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdWithClassifier
+
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -56,11 +59,11 @@ class MavenCodeLocationPackager {
     private int level
     private MutableDependencyGraph currentGraph = null
 
-    public ExternalIdFactory externalIdFactory;
-    public MavenCodeLocationPackager(ExternalIdFactory externalIdFactory) {
+    private ExternalIdFactoryWithClassifier externalIdFactory;
+    public MavenCodeLocationPackager(ExternalIdFactoryWithClassifier externalIdFactory) {
         this.externalIdFactory = externalIdFactory;
     }
-
+    
     public List<DetectCodeLocation> extractCodeLocations(String sourcePath, String mavenOutputText, String excludedModules, String includedModules) {
         ExcludedIncludedFilter filter = new ExcludedIncludedFilter(excludedModules, includedModules)
         codeLocations = []
@@ -185,8 +188,19 @@ class MavenCodeLocationPackager {
         String group = gavMatcher.group(1)
         String artifact = gavMatcher.group(2)
         String version = gavMatcher.group(4)
-
+        String[] coordinates = componentText.split(':')
+        group = coordinates[0]
+        artifact = coordinates[1]
+        version = coordinates[3]
         ExternalId externalId = externalIdFactory.createMavenExternalId(group, artifact, version)
+        if(coordinates.length >= 6){
+            version = coordinates[4]
+            String classifier = coordinates[3]
+            externalId = externalIdFactory.createMavenExternalIdWithClassifier(group, artifact, version, classifier)
+            logger.warn("The following Maven dependency has a classifier. Classifiers not officially supported: '"+componentText+"'")
+        }
+
+
         return new Dependency(artifact, version, externalId)
     }
 }

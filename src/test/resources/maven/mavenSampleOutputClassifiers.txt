@@ -1,0 +1,16 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building my-project 0.0.1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.10:tree (default-cli) @ my-project ---
+[INFO] com.murex:my-project:jar:0.0.1
+[INFO] \- com.spotify:docker-client:jar:shaded:8.7.1:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 0.890s
+[INFO] Finished at: Mon Mar 12 18:19:58 GMT 2018
+[INFO] Final Memory: 21M/1449M
+[INFO] ------------------------------------------------------------------------

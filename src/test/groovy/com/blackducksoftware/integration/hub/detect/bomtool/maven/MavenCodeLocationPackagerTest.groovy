@@ -1,5 +1,10 @@
 package com.blackducksoftware.integration.hub.detect.bomtool.maven
 
+import com.blackducksoftware.integration.hub.bdio.model.dependency.Dependency
+import com.blackducksoftware.integration.hub.bdio.model.externalid.ExternalId
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdFactoryWithClassifier
+import com.blackducksoftware.integration.hub.detect.model.ExternalIdWithClassifier
+
 import static org.junit.Assert.*
 
 import org.junit.Test
@@ -42,6 +47,17 @@ class MavenCodeLocationPackagerTest {
     }
 
     @Test
+    public void extractCodeLocationsWithClassifier() {
+        final String mavenOutputText = testUtil.getResourceAsUTF8String('/maven/mavenSampleOutputClassifiers.txt')
+        def mavenCodeLocationPackager = new MavenCodeLocationPackager(new ExternalIdFactoryWithClassifier())
+        List<DetectCodeLocation> codeLocations = mavenCodeLocationPackager.extractCodeLocations('/test/path', mavenOutputText, "", "")
+        assertEquals(1, codeLocations.size())
+        ExternalIdWithClassifier externalId = ((Dependency)codeLocations[0].dependencyGraph.getRootDependencies().getAt(0)).externalId;
+        assertEquals('8.7.1', externalId.version)
+        assertEquals('shaded', externalId.classifier)
+    }
+
+    @Test
     public void extractCodeLocationsCorruptTest() {
         final String mavenOutputText = testUtil.getResourceAsUTF8String('/maven/sonarStashCorruptOutput.txt')
         createNewCodeLocationTest(mavenOutputText, '/maven/sonarStashCorruptCodeLocation.json')
@@ -52,8 +68,7 @@ class MavenCodeLocationPackagerTest {
     }
 
     private void createNewCodeLocationTest(String mavenOutputText, String expectedResourcePath, int numberOfCodeLocations, String excludedModules, String includedModules) {
-        def mavenCodeLocationPackager = new MavenCodeLocationPackager()
-        mavenCodeLocationPackager.externalIdFactory = new ExternalIdFactory()
+        def mavenCodeLocationPackager = new MavenCodeLocationPackager(new ExternalIdFactoryWithClassifier())
         List<DetectCodeLocation> codeLocations = mavenCodeLocationPackager.extractCodeLocations('/test/path', mavenOutputText, excludedModules, includedModules)
         assertEquals(numberOfCodeLocations, codeLocations.size())
         DetectCodeLocation codeLocation = codeLocations[0]

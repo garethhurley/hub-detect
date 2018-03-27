@@ -181,11 +181,15 @@ class MavenCodeLocationPackager {
             logger.debug("${componentText} does not match pattern ${gavMatcher.pattern().toString()}")
             return null
         }
-
-        String group = gavMatcher.group(1)
-        String artifact = gavMatcher.group(2)
-        String version = gavMatcher.group(4)
-
+        String[] coordinates = componentText.split(':')
+        String group = coordinates[0]
+        String artifact = coordinates[1]
+        String version = coordinates[3]
+        if(coordinates.length >= 6){
+            version = coordinates[4]
+            String classifier = coordinates[3]
+            logger.warn("The following Maven dependency has a classifier:"+classifier+". Classifiers not officially supported: '"+componentText+"'")
+        }
         ExternalId externalId = externalIdFactory.createMavenExternalId(group, artifact, version)
         return new Dependency(artifact, version, externalId)
     }

@@ -1,5 +1,8 @@
 package com.blackducksoftware.integration.hub.detect.bomtool.maven
 
+import com.blackducksoftware.integration.hub.bdio.model.dependency.Dependency
+import com.blackducksoftware.integration.hub.bdio.model.externalid.ExternalId
+
 import static org.junit.Assert.*
 
 import org.junit.Test
@@ -21,6 +24,16 @@ class MavenCodeLocationPackagerTest {
     public void extractCodeLocationsTest() {
         final String mavenOutputText = testUtil.getResourceAsUTF8String('/maven/sonarStashOutput.txt')
         createNewCodeLocationTest(mavenOutputText, '/maven/sonarStashCodeLocation.json')
+    }
+
+    @Test
+    public void extractCodeLocationsWithClassifierVersionCorrectlyExtracted() {
+        final String mavenOutputText = testUtil.getResourceAsUTF8String('/maven/mavenSampleOutputClassifiers.txt')
+        def mavenCodeLocationPackager = new MavenCodeLocationPackager(new ExternalIdFactory())
+        List<DetectCodeLocation> codeLocations = mavenCodeLocationPackager.extractCodeLocations('/test/path', mavenOutputText, "", "")
+        assertEquals(1, codeLocations.size())
+        ExternalId externalId = ((Dependency)codeLocations[0].dependencyGraph.getRootDependencies().getAt(0)).externalId;
+        assertEquals('8.7.1', externalId.version)
     }
 
     @Test
